@@ -6,7 +6,7 @@ import appColors from "@colors/appColors";
 import AuthContext from "../../context/AuthContext";
 
 const ProductList = ({ filterText }) => {
-    const { allProducts } = useContext(AuthContext);
+    const { allProducts, user } = useContext(AuthContext);
     const data = allProducts?.data;
 
     const length = filterText.length;
@@ -23,6 +23,7 @@ const ProductList = ({ filterText }) => {
                             : require("@assets/banana9.jpg")
                     }
                     product={element}
+                    user={user}
                 />
             );
         });

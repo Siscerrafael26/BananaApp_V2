@@ -8,25 +8,22 @@ import {
     TouchableOpacity,
     ScrollView,
 } from "react-native";
-import DataCard from "@components/DataCard";
-import OrderCard from "@components/OrderCard";
+import DataCard from "@components/BuyerDataCard";
 import Spacer from "@components/Spacer";
-import StatisticsCard from "@components/StatisticsCard";
-import ScreenNames from "@screens/ScreenNames";
 import { AntDesign } from "@expo/vector-icons";
 import AuthContext from "../../context/AuthContext";
 import { logout } from "../../service/AuthService";
-const FarmerPage = ({ navigation }) => {
-    const { user, product, setUser } = useContext(AuthContext);
+const BuyerHomePage = ({ navigation }) => {
+    const { user, setUser, buyerOrdersData } = useContext(AuthContext);
 
     async function handleLogout() {
         await logout();
         setUser(null);
     }
-
     const Cards = () => {
         const cards_ = [];
-        const data = product?.data;
+        const data = buyerOrdersData?.data;
+
         const totalBei = data?.reduce(
             (acc, item) => acc + parseInt(item.bei, 10),
             0
@@ -76,21 +73,6 @@ const FarmerPage = ({ navigation }) => {
                             Aina: {user.user_type}
                         </Text>
                     </View>
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        style={styles.uploadButton}
-                    >
-                        <FontAwesome6
-                            name="add"
-                            size={23}
-                            color="black"
-                            onPress={() => {
-                                navigation.navigate(
-                                    ScreenNames.FARMERFORM_SCREEN
-                                );
-                            }}
-                        />
-                    </TouchableOpacity>
                 </View>
             </View>
             <Spacer size={25} spacerType={"columnSpacer"} />
@@ -100,12 +82,7 @@ const FarmerPage = ({ navigation }) => {
                         <Cards />
                     </ScrollView>
                     <Spacer size={25} spacerType={"columnSpacer"} />
-                    <OrderCard
-                        style={styles.recents}
-                        image={require("@assets/Banana1.jpg")}
-                    />
                     <Spacer size={25} spacerType={"columnSpacer"} />
-                    <StatisticsCard />
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -177,4 +154,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FarmerPage;
+export default BuyerHomePage;

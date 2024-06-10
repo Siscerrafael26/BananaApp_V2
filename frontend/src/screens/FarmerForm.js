@@ -5,18 +5,16 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Image,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import Spacer from "../components/Spacer";
+import * as ImagePicker from "expo-image-picker"; // If you're using Expo
 import { upload } from "../service/UploadService";
 import ScreenNames from "./ScreenNames";
-import AuthContext from "../context/AuthContext";
+import AuthContext from "../context/AuthContext"; // Ensure you import correctly
+
 const ainaNdizi = [
-    { label: "Malindi", aina: "Malindi" },
-    { label: "Bukoba", aina: "Bukoba" },
-    { label: "Mshare", aina: "Mshare" },
-    { label: "Matoke", aina: "Matoke" },
-    { label: "Uganda", aina: "Uganda" },
     { label: "Malindi", aina: "Malindi" },
     { label: "Bukoba", aina: "Bukoba" },
     { label: "Mshare", aina: "Mshare" },
@@ -33,30 +31,52 @@ const FarmerForm = ({ navigation }) => {
     const { user } = useContext(AuthContext);
     const userID = user.id;
 
-    // console.log(userID);
-    const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
     const [kiasi, setKiasi] = useState("");
     const [bei, setBei] = useState("");
     const [aina, setAina] = useState("");
-    const [userid, setUserID] = useState("");
+    const [image, setImage] = useState(null);
     const [errors, setErrors] = useState(null);
 
+    async function handleImagePicker() {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.cancelled) {
+            setImage(result);
+        }
+    }
+
     async function handleSaveProduct() {
-        try {
-            await upload({
-                kiasi,
-                user_id: userID,
-                bei,
-                aina,
+        const formData = new FormData();
+        formData.append("kiasi", kiasi);
+        formData.append("user_id", userID);
+        formData.append("bei", bei);
+        formData.append("aina", aina);
+        if (image) {
+            formData.append("image", {
+                uri: image.uri,
+                type: "image/jpeg",
+                name: "product.jpg",
             });
+        }
+
+        try {
+            await upload(formData);
             navigation.navigate(ScreenNames.PRODUCT_SCREEN);
         } catch (error) {
             if (error.response?.status === 422) {
                 setErrors(error.response.data.errors);
+            } else {
+                console.error("Failed to upload product", error);
             }
         }
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.formContainer}>
@@ -81,7 +101,7 @@ const FarmerForm = ({ navigation }) => {
                     data={ainaNdizi}
                     maxHeight={300}
                     labelField="label"
-                    valueField="value"
+                    valueField="aina"
                     placeholder={!isFocus ? "Chagua aina ya ndizi" : "..."}
                     value={aina}
                     onChangeText={(text) => setAina(text)}
@@ -98,7 +118,6 @@ const FarmerForm = ({ navigation }) => {
                     </Text>
                 )}
                 <Spacer size={10} spacerType={"columnSpacer"} />
-
                 <Text style={styles.menuTitle}>Bei ya ndizi</Text>
                 <TextInput
                     style={styles.textInput}
@@ -110,7 +129,6 @@ const FarmerForm = ({ navigation }) => {
                         {errors.bei}
                     </Text>
                 )}
-
                 <Text style={styles.menuTitle}>Kiasi ya ndizi</Text>
                 <Dropdown
                     style={[
@@ -122,9 +140,9 @@ const FarmerForm = ({ navigation }) => {
                     data={kiasiNdizi}
                     maxHeight={300}
                     labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? "Chagua aina ya ndizi" : "..."}
-                    value={aina}
+                    valueField="kiasi"
+                    placeholder={!isFocus ? "Chagua kiasi ya ndizi" : "..."}
+                    value={kiasi}
                     onChangeText={(text) => setKiasi(text)}
                     onFocus={() => setIsFocus(true)}
                     onBlur={() => setIsFocus(false)}
@@ -139,6 +157,23 @@ const FarmerForm = ({ navigation }) => {
                     </Text>
                 )}
                 <TouchableOpacity
+                    style={styles.imagePicker}
+                    onPress={handleImagePicker}
+                >
+                    <Text style={styles.imagePickerText}>Chagua Picha</Text>
+                </TouchableOpacity>
+                {/* {image && (
+                    <Image
+                        source={{ uri: image.uri }}
+                        style={{
+                            width: 200,
+                            height: 200,
+                            marginTop: 10,
+                            alignSelf: "center",
+                        }}
+                    />
+                )} */}
+                <TouchableOpacity
                     style={{
                         paddingVertical: 20,
                         width: 150,
@@ -149,14 +184,10 @@ const FarmerForm = ({ navigation }) => {
                         marginTop: 20,
                         alignSelf: "center",
                     }}
+                    onPress={handleSaveProduct}
                     activeOpacity={0.7}
                 >
-                    <Text
-                        style={{ color: "#f3fff3" }}
-                        onPress={handleSaveProduct}
-                    >
-                        Hifadhi
-                    </Text>
+                    <Text style={{ color: "#f3fff3" }}>Hifadhi</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -205,5 +236,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 16,
         borderColor: "gray",
+    },
+    imagePicker: {
+        paddingVertical: 20,
+        backgroundColor: "#70c945",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 25,
+        marginTop: 20,
+    },
+    imagePickerText: {
+        color: "#f3fff3",
     },
 });

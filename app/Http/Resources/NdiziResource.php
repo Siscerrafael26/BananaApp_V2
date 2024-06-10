@@ -16,6 +16,7 @@ class NdiziResource extends JsonResource
     {
         return [
             'aina'=>$this->aina,
+            'id'=>$this->id,
             'bei'=>$this->bei,
             'kiasi'=>$this->kiasi,
             'user_id' => new UserResource($this->product),

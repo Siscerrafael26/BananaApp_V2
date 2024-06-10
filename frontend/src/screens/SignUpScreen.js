@@ -1,25 +1,17 @@
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import {
-    StyleSheet,
     Text,
     View,
-    Button,
-    Box,
-    Image,
     ImageBackground,
-    SafeAreaView,
     TouchableOpacity,
+    Platform,
 } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
-
-import ScreenNames from "@screens/ScreenNames";
 
 import { CustomUserInput } from "../components/CustomUserInput";
 import { BlurView } from "expo-blur";
-import { Fontisto } from "@expo/vector-icons";
 import appColors from "@colors/appColors";
 import { Ionicons } from "@expo/vector-icons";
+import { signup } from "../service/AuthService";
 
 const SignUpScreen = ({ navigation }) => {
     const [isBuyer, setIsBuyer] = useState(false);
@@ -37,9 +29,11 @@ const SignUpScreen = ({ navigation }) => {
     function selectedBuyer() {
         if (isBuyer) {
             setIsBuyer(false);
+            setUserType("buyer");
         } else {
             setIsFarmer(false);
             setIsBuyer(true);
+            setUserType("buyer");
             setRoute("/products");
             setError(false);
         }
@@ -48,27 +42,34 @@ const SignUpScreen = ({ navigation }) => {
     function selectedFarmer() {
         if (isFarmer) {
             setIsFarmer(false);
+            setUserType("farmer");
         } else {
             setIsBuyer(false);
             setIsFarmer(true);
+            setUserType("farmer");
             setRoute("/farmerpage");
             setError(false);
         }
     }
 
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         setErrors({});
         try {
+            await signup({
+                name,
+                email,
+                password,
+                location,
+                phone,
+                user_type: userType,
+                device_name: `${Platform.OS} ${Platform.Version}`,
+            });
+            navigation.navigate(ScreenNames.LOGIN_SCREEN);
         } catch (error) {
-            console.error(error);
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors);
+            }
         }
-        // if (isBuyer) {
-        //     navigation.navigate(ScreenNames.PRODUCT_SCREEN);
-        // } else if (isFarmer) {
-        //     navigation.navigate(ScreenNames.FARMER_SCREEN);
-        // } else {
-        //     setError(true);
-        // }
     };
 
     return (
@@ -104,7 +105,10 @@ const SignUpScreen = ({ navigation }) => {
                         containerType="antdesign"
                         color={appColors.appColor}
                         placeholder="Full Name"
-                        // value={}
+                        secureTextEntry={false}
+                        value={name}
+                        onChangeText={(text) => setName(text)}
+                        errors={errors.name}
                     />
 
                     <View style={{ height: 10 }}></View>
@@ -113,27 +117,43 @@ const SignUpScreen = ({ navigation }) => {
                         color={appColors.appColor}
                         containerType="fontisto"
                         placeholder="Email"
+                        secureTextEntry={false}
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}
+                        errors={errors.email}
                     />
                     <View style={{ height: 10 }}></View>
                     <CustomUserInput
                         icon="phone"
                         color={appColors.appColor}
                         containerType="antdesign"
-                        placeholder="PhoneNumber"
+                        secureTextEntry={false}
+                        placeholder="Phone Number"
+                        value={phone}
+                        onChangeText={(text) => setPhone(text)}
+                        errors={errors.phone}
                     />
                     <View style={{ height: 10 }}></View>
                     <CustomUserInput
                         icon="location"
                         containerType="evilicons"
                         color={appColors.appColor}
+                        secureTextEntry={false}
                         placeholder="Location"
+                        value={location}
+                        onChangeText={(text) => setLocation(text)}
+                        errors={errors.location}
                     />
                     <View style={{ height: 10 }}></View>
                     <CustomUserInput
                         icon="eye"
                         color={appColors.appColor}
                         containerType="feather"
+                        secureTextEntry={true}
                         placeholder="Password"
+                        value={password}
+                        onChangeText={(text) => setPassword(text)}
+                        errors={errors.password}
                     />
                     <View style={{ height: 10 }}></View>
                 </View>

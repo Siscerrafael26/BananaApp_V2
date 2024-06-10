@@ -24,6 +24,7 @@ class User extends Authenticatable
         'device_name',
         'phone',
         'user_type',
+        'location'
     ];
 
     /**

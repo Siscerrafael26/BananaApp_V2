@@ -1,0 +1,28 @@
+{
+    "buyer_id": {
+        "id": 2,
+        "location": "Mbeya",
+        "name": "Jayrous",
+        "phone": "+255 777 888 9999"
+    },
+    "farmer_id": {
+        "id": 1,
+        "location": "Arusha",
+        "name": "Fransisca Fidelis",
+        "phone": "+255 777 888 9999"
+    },
+    "id": 3,
+    "product_id": {
+        "aina": "Mshare",
+        "bei": "10900",
+        "id": 5,
+        "kiasi": "Kichane",
+        "user_id": {
+            "id": 1,
+            "location": "Arusha",
+            "name": "Fransisca Fidelis",
+            "phone": "+255 777 888 9999"
+        }
+    },
+    "status": "Imekataliwa"
+}

@@ -1,15 +1,7 @@
 import React from "react";
-import { View, Image, Text, TouchableOpacity } from "react-native";
-import CardButton from "./CardButton";
+import { View, Image, Text } from "react-native";
 
-const ProductListCard = ({
-    image,
-    kiasi,
-    title = "Add to Cart",
-    beiKichane,
-    ainaYaNdizi,
-    showAddButton = true,
-}) => {
+const ProductListCard = ({ image, kiasi, beiKichane, ainaYaNdizi }) => {
     return (
         <View style={{ flexDirection: "row", height: 130, marginTop: 10 }}>
             <Image source={image} style={{ height: 113, width: 159 }} />

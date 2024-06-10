@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
-import { View, Text, SafeAreaView, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import CustomSearchInput from "@components/CustomSearchInput";
-import ProductListCard from "@components/ProductListCard";
+import MyProducts from "@components/MyProducts";
 import appColors from "@colors/appColors";
 import AuthContext from "../../context/AuthContext";
 
@@ -13,14 +13,14 @@ const ProductList = ({ filterText }) => {
     if (length < 1) {
         data?.forEach((element, index) => {
             products_.push(
-                <ProductListCard
+                <MyProducts
                     key={index}
                     image={
                         element.kiasi === "Kichane"
                             ? require("@assets/Banana1.jpg")
                             : require("@assets/banana9.jpg")
                     }
-                    beiKichane={element.bei}
+                    bei={element.bei}
                     kiasi={element.kiasi}
                     ainaYaNdizi={element.aina}
                 />
@@ -30,7 +30,7 @@ const ProductList = ({ filterText }) => {
         data?.forEach((element, index) => {
             if (element?.aina?.includes(filterText)) {
                 products_.push(
-                    <ProductListCard
+                    <MyProducts
                         key={index}
                         image={
                             element.kiasi === "Kichane"

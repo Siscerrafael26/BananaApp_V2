@@ -2,9 +2,8 @@ import React, { useContext, useState } from "react";
 import { TouchableOpacity, StyleSheet, Text } from "react-native";
 import AuthContext from "../context/AuthContext";
 import { makeOrder } from "../service/OrderService";
-import ScreenNames from "@screens/ScreenNames";
 
-export default CardButton = ({ title, props, navigation }) => {
+export default CardButton = ({ title, props }) => {
     const [productID, setProductID] = useState(props.product_id);
     const [buyerID, setBuyerID] = useState(props.buyer_id);
     const [farmerID, setFarmerID] = useState(props.farmer_id);
@@ -15,14 +14,13 @@ export default CardButton = ({ title, props, navigation }) => {
                 farmer_id: farmerID,
                 product_id: productID,
             });
-            navigation.replace(ScreenNames.ORDER_SCREEN);
         } catch (error) {
             console.log(error);
         }
     }
     return (
         <TouchableOpacity activeOpacity={0.8} style={styles.button}>
-            <Text style={styles.buttonText} onPress={handleMakeOrder}>
+            <Text style={styles.buttonText} /*onPress={handleMakeOrder}*/>
                 {title}
             </Text>
         </TouchableOpacity>

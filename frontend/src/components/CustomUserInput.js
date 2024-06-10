@@ -45,6 +45,7 @@ export const CustomUserInput = ({
     value,
     onChangeText,
     keyboardType,
+    secureTextEntry,
     errors,
 }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -60,7 +61,7 @@ export const CustomUserInput = ({
                     onBlur={() => {}}
                     onChangeText={onChangeText}
                     keyboardType={keyboardType}
-                    secureTextEntry
+                    secureTextEntry={secureTextEntry}
                 />
             </View>
             {errors?.map((item, index) => {
@@ -76,7 +77,7 @@ export const CustomUserInput = ({
 
 const styles = StyleSheet.create({
     container: {
-        width: 200,
+        width: 300,
         height: 40,
         flexDirection: "row",
         alignItems: "center",

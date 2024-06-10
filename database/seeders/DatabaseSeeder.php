@@ -22,6 +22,14 @@ class DatabaseSeeder extends Seeder
             'phone' =>'+255 777 888 9999',
             'password'=>bcrypt('password'),
         ]);
+        User::factory()->create([
+            'name' => 'Jayrous',
+            'email' => 'joshua@gmail.com',
+            'location' => 'Mbeya',
+            'user_type' =>'buyer',
+            'phone' =>'+255 777 888 9999',
+            'password'=>bcrypt('password'),
+        ]);
         User::factory(7)->create();
 
     }

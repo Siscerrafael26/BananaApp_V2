@@ -2,37 +2,20 @@ import React, { useContext } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import CardAvatar from "./CardAvatar";
 import AuthContext from "../context/AuthContext";
-export default DataCard = ({ cardType, props }) => {
+export default BuyerDataCard = ({ cardType, props }) => {
     const { farmerOrderData } = useContext(AuthContext);
     const farmerOrder = farmerOrderData?.data?.length;
     return (
         <TouchableOpacity activeOpacity={0.7} style={styles.dataCard}>
             <CardAvatar cardType={cardType} />
+
             <View style={styles.card}>
                 <Text style={styles.descriptionText} numberOfLines={1}>
                     {" "}
-                    Jumla ya Pesa ya ndizi{" "}
-                </Text>
-                <Text style={styles.numberText} numberOfLines={1}>
-                    {props.totalBei} Tsh
-                </Text>
-            </View>
-            <View style={styles.card}>
-                <Text style={styles.descriptionText} numberOfLines={1}>
-                    {" "}
-                    Ndizi zilizopo{" "}
+                    Jumla ya Oda nilizo fanya{" "}
                 </Text>
                 <Text style={styles.numberText} numberOfLines={1}>
                     {props?.data?.length}
-                </Text>
-            </View>
-            <View style={styles.card}>
-                <Text style={styles.descriptionText} numberOfLines={1}>
-                    {" "}
-                    Oda Zangu{" "}
-                </Text>
-                <Text style={styles.numberText} numberOfLines={1}>
-                    {farmerOrder}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -64,7 +47,7 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     descriptionText: {
-        fontSize: 10,
+        fontSize: 20,
     },
     card: {
         marginLeft: 15,

@@ -1,18 +1,12 @@
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import {
     StyleSheet,
     Text,
     View,
-    Button,
-    Box,
-    Image,
     ImageBackground,
-    SafeAreaView,
     TouchableOpacity,
     Platform,
 } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { BlurView } from "expo-blur";
 import { CustomUserInput } from "@components/CustomUserInput";
 import appColors from "@colors/appColors";
@@ -28,19 +22,14 @@ const LoginScreen = ({ navigation }) => {
     async function handleLogin() {
         setErrors({});
         try {
-            // making a login request
             await login({
                 email,
                 password,
                 device_name: `${Platform.OS} ${Platform.Version}`,
             });
-            // Getting the authenticated
             const user = await loadUser();
-            // console.log("User Returned ", user);
-
-            user && navigation.navigate(ScreenNames.AUTH_SCREEN);
+            user && navigation.navigation(ScreenNames.AUTH_SCREEN);
         } catch (error) {
-            // console.error("Error Message ", error.response);
             if (error.response?.status === 422) {
                 setErrors(error.response.data.errors);
             }
