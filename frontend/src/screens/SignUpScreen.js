@@ -12,13 +12,12 @@ import { BlurView } from "expo-blur";
 import appColors from "@colors/appColors";
 import { Ionicons } from "@expo/vector-icons";
 import { signup } from "../service/AuthService";
-
+import LoadingScreen from "@screens/LoadingScreen";
 const SignUpScreen = ({ navigation }) => {
     const [isBuyer, setIsBuyer] = useState(false);
     const [isFarmer, setIsFarmer] = useState(false);
     const [route, setRoute] = useState("");
     const [error, setError] = useState(false);
-    // signup states
     const [errors, setErrors] = useState({});
     const [email, setEmail] = useState("");
     const [location, setLocation] = useState("");
@@ -26,6 +25,7 @@ const SignUpScreen = ({ navigation }) => {
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [userType, setUserType] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     function selectedBuyer() {
         if (isBuyer) {
             setIsBuyer(false);
@@ -55,6 +55,7 @@ const SignUpScreen = ({ navigation }) => {
     const handleSignUp = async () => {
         setErrors({});
         try {
+            setIsLoading(true);
             await signup({
                 name,
                 email,
@@ -69,9 +70,13 @@ const SignUpScreen = ({ navigation }) => {
             if (error.response?.status === 422) {
                 setErrors(error.response.data.errors);
             }
+        } finally {
+            setIsLoading(false);
         }
     };
-
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
     return (
         <ImageBackground
             style={{ flex: 1 }}

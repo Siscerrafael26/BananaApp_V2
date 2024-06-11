@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Alert, StyleSheet, Text } from "react-native";
 import Constants from "expo-constants";
 import Index from "./src/screens/Index";
-import ProductPage from "@screens/(tabs)/ProductPage";
 import FarmerForm from "@screens/FarmerForm";
 import SignUpScreen from "@screens/SignUpScreen";
 import LoginScreen from "@screens/LoginScreen";
-import FarmerPage from "@screens/(tabs)/FarmerPage";
 import AuthScreen from "@screens/(tabs)/AuthScreen";
 import LoadingScreen from "@screens/LoadingScreen";
 import ScreenNames from "@screens/ScreenNames";
@@ -18,6 +16,8 @@ import { getBuyerOrder, getFarmerOrder } from "./src/service/OrderService";
 import { loadAllData, loadData } from "./src/service/UploadService";
 import { loadUser } from "./src/service/AuthService";
 import OrderPage from "./src/screens/OrderPage";
+import useProduct from "./src/hooks/useProduct";
+import { baseURL } from "./src/utils/axios";
 
 const App = () => {
     const Stack = createNativeStackNavigator();
@@ -27,39 +27,38 @@ const App = () => {
     const [buyerOrdersData, setMyOrders] = useState();
     const [farmerOrderData, setFarmerOrder] = useState();
     const [loading, setLoading] = useState(true);
-
+    const getAppUrl = baseURL;
+    const fetchData = async () => {
+        try {
+            const user = await loadUser();
+            setUser(user);
+            const product = await loadData(user?.id);
+            setProducts(product);
+            const allProd = await loadAllData();
+            setAllProd(allProd);
+            const buyerOrders = await getBuyerOrder(user?.id);
+            setMyOrders(buyerOrders);
+            const farmerOrder = await getFarmerOrder(user?.id);
+            setFarmerOrder(farmerOrder);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message);
+        }
+        setLoading(false);
+    };
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const user = await loadUser();
-                setUser(user);
-                const product = await loadData(user?.id);
-                setProducts(product);
-                const allProd = await loadAllData();
-                setAllProd(allProd);
-                const buyerOrders = await getBuyerOrder(user?.id);
-                setMyOrders(buyerOrders);
-                const farmerOrder = await getFarmerOrder(user?.id);
-                setFarmerOrder(farmerOrder);
-            } catch (error) {
-                // console.error("Failed to load Data ", error?.response);
-            }
-            setLoading(false);
-        };
-
         fetchData();
-
         const intervalID = setInterval(() => {
             fetchData();
-        }, 10000);
-
+        }, 2000);
         return () => {
             clearInterval(intervalID);
         };
     }, []);
+
     if (loading) {
         return <LoadingScreen />;
     }
+
     return (
         <AuthContext.Provider
             value={{
@@ -70,6 +69,7 @@ const App = () => {
                 allProducts,
                 farmerOrderData,
                 loading,
+                baseURL: getAppUrl,
             }}
         >
             <NavigationContainer>
@@ -94,11 +94,6 @@ const App = () => {
                                 component={FarmerForm}
                                 options={{ headerShown: false }}
                             />
-                            {/* <Stack.Screen
-                                name={ScreenNames.FARMER_SCREEN}
-                                component={FarmerPage}
-                                options={{ headerShown: false }}
-                            /> */}
                         </>
                     ) : (
                         <>

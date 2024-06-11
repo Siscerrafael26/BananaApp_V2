@@ -9,9 +9,10 @@ class Ndizi extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["user_id","aina","bei","kiasi"];
+    protected $fillable = ["user_id", "aina", "bei", "kiasi", "image"];
 
-    public function product(){
-        return $this->belongsTo(User::class,"user_id");
+    public function product()
+    {
+        return $this->belongsTo(User::class, "user_id");
     }
 }

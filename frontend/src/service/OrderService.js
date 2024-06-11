@@ -11,7 +11,6 @@ export async function makeOrder(data) {
 
 export async function getFarmerOrder(user) {
     const { data: orders } = await axios.get(`/farmer${user}`);
-    // console.log("Axios Get: ", orders);
     return orders;
 }
 

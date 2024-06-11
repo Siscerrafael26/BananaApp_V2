@@ -6,7 +6,7 @@ import appColors from "@colors/appColors";
 import AuthContext from "../../context/AuthContext";
 
 const ProductList = ({ filterText }) => {
-    const { allProducts, user } = useContext(AuthContext);
+    const { allProducts, user, baseURL } = useContext(AuthContext);
     const data = allProducts?.data;
 
     const length = filterText.length;
@@ -17,13 +17,9 @@ const ProductList = ({ filterText }) => {
             products_.push(
                 <ProductCard
                     key={index}
-                    image={
-                        element.kiasi === "Kichane"
-                            ? require("@assets/Banana1.jpg")
-                            : require("@assets/banana9.jpg")
-                    }
                     product={element}
                     user={user}
+                    image={baseURL}
                 />
             );
         });
@@ -33,12 +29,9 @@ const ProductList = ({ filterText }) => {
                 products_.push(
                     <ProductCard
                         key={index}
-                        image={
-                            element.kiasi === "Kichane"
-                                ? require("@assets/Banana1.jpg")
-                                : require("@assets/banana9.jpg")
-                        }
                         product={element}
+                        user={user}
+                        image={baseURL}
                     />
                 );
             }
@@ -50,7 +43,7 @@ const ProductList = ({ filterText }) => {
 
 const ProductPageList = () => {
     const [filterText, setFilterText] = useState("");
-    const { allProducts } = useContext(AuthContext);
+    const { allProducts, baseURL } = useContext(AuthContext);
     const data = allProducts?.data;
     return (
         <>

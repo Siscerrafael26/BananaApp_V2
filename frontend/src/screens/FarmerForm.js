@@ -6,14 +6,17 @@ import {
     TouchableOpacity,
     View,
     Image,
+    ScrollView,
+    Alert,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
+import LoadingScreen from "@screens/LoadingScreen";
 import Spacer from "../components/Spacer";
-import * as ImagePicker from "expo-image-picker"; // If you're using Expo
 import { upload } from "../service/UploadService";
 import ScreenNames from "./ScreenNames";
-import AuthContext from "../context/AuthContext"; // Ensure you import correctly
-
+import AuthContext from "../context/AuthContext";
+import { SafeAreaView } from "react-native-safe-area-context";
+import * as DocumentPicker from "expo-document-picker";
 const ainaNdizi = [
     { label: "Malindi", aina: "Malindi" },
     { label: "Bukoba", aina: "Bukoba" },
@@ -29,168 +32,202 @@ const kiasiNdizi = [
 
 const FarmerForm = ({ navigation }) => {
     const { user } = useContext(AuthContext);
-    const userID = user.id;
-
+    const userID = user?.id;
+    const [errors, setErrors] = useState({});
     const [isFocus, setIsFocus] = useState(false);
-    const [kiasi, setKiasi] = useState("");
-    const [bei, setBei] = useState("");
-    const [aina, setAina] = useState("");
-    const [image, setImage] = useState(null);
-    const [errors, setErrors] = useState(null);
-
-    async function handleImagePicker() {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.cancelled) {
-            setImage(result);
-        }
-    }
+    const [uploading, setUploading] = useState(false);
+    const [imagePR, setImage] = useState(null);
+    const [form, setForm] = useState({
+        kiasi: "",
+        user_id: userID,
+        bei: "",
+        aina: "",
+        image: null,
+    });
 
     async function handleSaveProduct() {
-        const formData = new FormData();
-        formData.append("kiasi", kiasi);
-        formData.append("user_id", userID);
-        formData.append("bei", bei);
-        formData.append("aina", aina);
-        if (image) {
-            formData.append("image", {
-                uri: image.uri,
-                type: "image/jpeg",
-                name: "product.jpg",
-            });
-        }
-
+        setErrors({});
         try {
-            await upload(formData);
-            navigation.navigate(ScreenNames.PRODUCT_SCREEN);
+            setUploading(true);
+            const res = await upload(form);
+            Alert.alert("Ndizi Ime Ongezwa", "Umefanikiwa kuongeza ndizi");
         } catch (error) {
+            setUploading(false);
             if (error.response?.status === 422) {
                 setErrors(error.response.data.errors);
             } else {
-                console.error("Failed to upload product", error);
+                Alert.alert("Error ", error.response?.data?.message);
             }
+        } finally {
+            setUploading(false);
+            setForm({
+                kiasi: "",
+                user_id: userID,
+                bei: "",
+                aina: "",
+                image: null,
+            });
         }
     }
-
+    if (uploading) {
+        return <LoadingScreen />;
+    }
+    const openPicker = async (selectType) => {
+        const result = await DocumentPicker.getDocumentAsync({
+            type:
+                selectType === "image"
+                    ? ["image/png", "image/jpeg"]
+                    : ["video/gif", "video/mp4"],
+        });
+        if (!result.canceled) {
+            setImage(result.assets[0]);
+            setForm({ ...form, image: result.assets[0] });
+        } else {
+            setTimeout(() => {
+                Alert.alert(
+                    "Image Picked",
+                    "Hakikisha ume chagua picha na unaiona kwenye kibox chini baada ya kuchagua"
+                );
+            }, 100);
+        }
+    };
+    // console.log(imagePR);
     return (
-        <View style={styles.container}>
-            <View style={styles.formContainer}>
-                <Text
-                    style={{
-                        textAlign: "center",
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        paddingVertical: 10,
-                    }}
-                >
-                    Ongeza bidhaa mpya
-                </Text>
-                <Text style={styles.menuTitle}>Aina ya ndizi</Text>
-                <Dropdown
-                    style={[
-                        styles.dropdown,
-                        isFocus && { borderColor: "#70c945" },
-                    ]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    data={ainaNdizi}
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="aina"
-                    placeholder={!isFocus ? "Chagua aina ya ndizi" : "..."}
-                    value={aina}
-                    onChangeText={(text) => setAina(text)}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={(item) => {
-                        setAina(item.aina);
-                        setIsFocus(false);
-                    }}
-                />
-                {errors && (
-                    <Text style={{ color: "red", marginTop: 2 }}>
-                        {errors.aina}
-                    </Text>
-                )}
-                <Spacer size={10} spacerType={"columnSpacer"} />
-                <Text style={styles.menuTitle}>Bei ya ndizi</Text>
-                <TextInput
-                    style={styles.textInput}
-                    value={bei}
-                    onChangeText={(text) => setBei(text)}
-                />
-                {errors && (
-                    <Text style={{ color: "red", marginTop: 2 }}>
-                        {errors.bei}
-                    </Text>
-                )}
-                <Text style={styles.menuTitle}>Kiasi ya ndizi</Text>
-                <Dropdown
-                    style={[
-                        styles.dropdown,
-                        isFocus && { borderColor: "#70c945" },
-                    ]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    data={kiasiNdizi}
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="kiasi"
-                    placeholder={!isFocus ? "Chagua kiasi ya ndizi" : "..."}
-                    value={kiasi}
-                    onChangeText={(text) => setKiasi(text)}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={(item) => {
-                        setKiasi(item.kiasi);
-                        setIsFocus(false);
-                    }}
-                />
-                {errors && (
-                    <Text style={{ color: "red", marginTop: 2 }}>
-                        {errors.kiasi}
-                    </Text>
-                )}
-                <TouchableOpacity
-                    style={styles.imagePicker}
-                    onPress={handleImagePicker}
-                >
-                    <Text style={styles.imagePickerText}>Chagua Picha</Text>
-                </TouchableOpacity>
-                {/* {image && (
-                    <Image
-                        source={{ uri: image.uri }}
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={styles.formContainer}>
+                <View style={styles.view}>
+                    <Text
                         style={{
-                            width: 200,
-                            height: 200,
-                            marginTop: 10,
-                            alignSelf: "center",
+                            textAlign: "center",
+                            fontSize: 20,
+                            fontWeight: "bold",
+                            paddingVertical: 10,
+                        }}
+                    >
+                        Ongeza bidhaa mpya
+                    </Text>
+                    <Text style={styles.menuTitle}>Aina ya ndizi</Text>
+                    <Dropdown
+                        style={[
+                            styles.dropdown,
+                            isFocus && { borderColor: "#70c945" },
+                        ]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        data={ainaNdizi}
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="aina"
+                        placeholder={!isFocus ? "Chagua aina ya ndizi" : "..."}
+                        value={form.aina}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={(item) => {
+                            setForm({ ...form, aina: item.aina });
+                            setIsFocus(false);
                         }}
                     />
-                )} */}
-                <TouchableOpacity
-                    style={{
-                        paddingVertical: 20,
-                        width: 150,
-                        backgroundColor: "#70c945",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 25,
-                        marginTop: 20,
-                        alignSelf: "center",
-                    }}
-                    onPress={handleSaveProduct}
-                    activeOpacity={0.7}
-                >
-                    <Text style={{ color: "#f3fff3" }}>Hifadhi</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+                    {errors && (
+                        <Text style={{ color: "red", marginTop: 2 }}>
+                            {errors.aina}
+                        </Text>
+                    )}
+                    <Spacer size={10} spacerType={"columnSpacer"} />
+                    <Text style={styles.menuTitle}>Bei ya ndizi</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        value={form.bei}
+                        onChangeText={(text) => setForm({ ...form, bei: text })}
+                    />
+                    {errors && (
+                        <Text style={{ color: "red", marginTop: 2 }}>
+                            {errors.bei}
+                        </Text>
+                    )}
+                    <Text style={styles.menuTitle}>Kiasi ya ndizi</Text>
+                    <Dropdown
+                        style={[
+                            styles.dropdown,
+                            isFocus && { borderColor: "#70c945" },
+                        ]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        data={kiasiNdizi}
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="kiasi"
+                        placeholder={!isFocus ? "Chagua kiasi ya ndizi" : "..."}
+                        value={form.kiasi}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={(item) => {
+                            setForm({ ...form, kiasi: item.kiasi });
+                            setIsFocus(false);
+                        }}
+                    />
+                    {errors && (
+                        <Text style={{ color: "red", marginTop: 2 }}>
+                            {errors.kiasi}
+                        </Text>
+                    )}
+                    {!imagePR && (
+                        <TouchableOpacity style={styles.uploadBtn}>
+                            <Text
+                                onPress={() => openPicker("image")}
+                                style={{ color: "#f3fff3" }}
+                            >
+                                Chagua Picha Ya bidhaa
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                    {errors && (
+                        <Text style={{ color: "red", marginTop: 2 }}>
+                            {errors?.image}
+                        </Text>
+                    )}
+                    {imagePR && (
+                        <TouchableOpacity
+                            style={styles.imagePicker}
+                            onPress={() => openPicker("image")}
+                        >
+                            <Image
+                                source={imagePR}
+                                style={{
+                                    width: 300,
+                                    height: 200,
+                                    alignSelf: "center",
+                                }}
+                            />
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity
+                        style={{
+                            paddingVertical: 20,
+                            width: "100%",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 25,
+                            marginTop: 20,
+                            alignSelf: "center",
+                            opacity: `${uploading ? 0.5 : 10}`,
+                            backgroundColor: `${uploading ? "red" : "#70c945"}`,
+                        }}
+                        onPress={handleSaveProduct}
+                        activeOpacity={0.7}
+                    >
+                        <Text
+                            style={{
+                                color: "#f3fff3",
+                            }}
+                            disabled={uploading}
+                        >
+                            Hifadhi
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -200,6 +237,20 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#f3fff3",
+        height: "100%",
+    },
+    uploadBtn: {
+        paddingVertical: 20,
+        width: "100%",
+        backgroundColor: "#70c945",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 25,
+        marginTop: 20,
+        alignSelf: "center",
+    },
+    view: {
+        marginBottom: 50,
     },
     formContainer: {
         backgroundColor: "white",
@@ -208,6 +259,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         borderRadius: 15,
         marginTop: 50,
+        marginBottom: 50,
     },
     dropdown: {
         height: 50,
@@ -238,14 +290,10 @@ const styles = StyleSheet.create({
         borderColor: "gray",
     },
     imagePicker: {
-        paddingVertical: 20,
+        paddingVertical: 1,
         backgroundColor: "#70c945",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 25,
-        marginTop: 20,
-    },
-    imagePickerText: {
-        color: "#f3fff3",
+        borderRadius: 10,
     },
 });

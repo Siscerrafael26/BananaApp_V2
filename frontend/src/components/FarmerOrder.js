@@ -10,7 +10,10 @@ const FarmerOrder = ({ image, props }) => {
                 marginTop: 20,
             }}
         >
-            <Image source={image} style={{ height: 110, width: 160 }} />
+            <Image
+                source={{ uri: image + props?.product_id?.image }}
+                style={{ height: 110, width: 160 }}
+            />
 
             <View style={{ marginLeft: 10 }}>
                 <Text>Aina: {props?.product_id?.aina}</Text>

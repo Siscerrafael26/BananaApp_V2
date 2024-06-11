@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { View, Image, Text, StyleSheet } from "react-native";
 import AuthContext from "../context/AuthContext";
 
-const FarmerProductCard = ({ image }) => {
-    const { farmerOrderData } = useContext(AuthContext);
+const FarmerProductCard = () => {
+    const { farmerOrderData, baseURL } = useContext(AuthContext);
     const orders = farmerOrderData?.data[0];
     return (
         <View
@@ -13,7 +13,10 @@ const FarmerProductCard = ({ image }) => {
                 marginTop: 20,
             }}
         >
-            <Image source={image} style={{ height: 110, width: 160 }} />
+            <Image
+                source={{ uri: baseURL + orders?.product_id?.image }}
+                style={{ height: 110, width: 160 }}
+            />
             <View style={{ marginLeft: 10 }}>
                 <Text>Aina: {orders?.product_id?.aina}</Text>
                 <Text>Kiasi: {orders?.product_id?.kiasi}</Text>

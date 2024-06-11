@@ -13,7 +13,10 @@ const MyProducts = ({ image, bei, kiasi, ainaYaNdizi }) => {
                 marginTop: 20,
             }}
         >
-            <Image source={image} style={{ height: 110, width: 160 }} />
+            <Image
+                source={{ uri: image }}
+                style={{ height: 110, width: 160 }}
+            />
             <View style={{ height: 15 }}></View>
             <View style={{ marginLeft: 10 }}>
                 <Text>Aina: {ainaYaNdizi}</Text>

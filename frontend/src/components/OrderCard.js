@@ -3,7 +3,6 @@ import { View, StyleSheet, Text } from "react-native";
 import FarmerProductCard from "./FarmerProductCard";
 
 export default OrderCard = ({
-    image,
     beiKichane,
     beiMkungu,
     ainaYaNdizi,
@@ -13,7 +12,6 @@ export default OrderCard = ({
         <View style={styles.card}>
             <Text style={styles.cardText}>{cardText}</Text>
             <FarmerProductCard
-                image={image}
                 beiKichane={beiKichane}
                 beiMkungu={beiMkungu}
                 showAddButton={false}

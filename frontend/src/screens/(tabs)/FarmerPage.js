@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { FontAwesome6 } from "@expo/vector-icons";
 import {
     SafeAreaView,
@@ -7,21 +7,30 @@ import {
     View,
     TouchableOpacity,
     ScrollView,
+    Alert,
 } from "react-native";
 import DataCard from "@components/DataCard";
 import OrderCard from "@components/OrderCard";
 import Spacer from "@components/Spacer";
 import StatisticsCard from "@components/StatisticsCard";
-import ScreenNames from "@screens/ScreenNames";
 import { AntDesign } from "@expo/vector-icons";
 import AuthContext from "../../context/AuthContext";
 import { logout } from "../../service/AuthService";
+import LoadingScreen from "@screens/LoadingScreen";
+
 const FarmerPage = ({ navigation }) => {
     const { user, product, setUser } = useContext(AuthContext);
-
+    const [isLoading, setIsLoading] = useState(false);
     async function handleLogout() {
-        await logout();
-        setUser(null);
+        try {
+            setIsLoading(true);
+            await logout();
+            setUser(null);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const Cards = () => {
@@ -42,7 +51,9 @@ const FarmerPage = ({ navigation }) => {
 
         return cards_;
     };
-
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topHeader}>
@@ -56,7 +67,7 @@ const FarmerPage = ({ navigation }) => {
                     <AntDesign
                         name="logout"
                         style={styles.logout}
-                        size={24}
+                        size={26}
                         color="black"
                         onPress={handleLogout}
                     />
@@ -76,7 +87,7 @@ const FarmerPage = ({ navigation }) => {
                             Aina: {user.user_type}
                         </Text>
                     </View>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         activeOpacity={0.7}
                         style={styles.uploadButton}
                     >
@@ -90,7 +101,7 @@ const FarmerPage = ({ navigation }) => {
                                 );
                             }}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </View>
             <Spacer size={25} spacerType={"columnSpacer"} />
@@ -100,10 +111,7 @@ const FarmerPage = ({ navigation }) => {
                         <Cards />
                     </ScrollView>
                     <Spacer size={25} spacerType={"columnSpacer"} />
-                    <OrderCard
-                        style={styles.recents}
-                        image={require("@assets/Banana1.jpg")}
-                    />
+                    <OrderCard style={styles.recents} />
                     <Spacer size={25} spacerType={"columnSpacer"} />
                     <StatisticsCard />
                 </View>
@@ -116,10 +124,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#f3fff3",
-    },
-    recents: {
-        // width: 400,
-        // height: 400,
+        marginTop: 22,
     },
     topHeader: {
         justifyContent: "flex-end",
@@ -147,8 +152,13 @@ const styles = StyleSheet.create({
         backgroundColor: "#f3fff3",
     },
     logout: {
+        justifyContent: "center",
+        alignItems: "center",
+        height: 27,
+        width: 27,
+        borderRadius: 15,
+        backgroundColor: "#f3fff3",
         marginRight: 15,
-        color: "#f0f0f0",
     },
     iconUser: {
         justifyContent: "center",
@@ -167,8 +177,8 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     farmerPageContents: {
-        paddingLeft: 20,
-        width: 400,
+        paddingLeft: 5,
+        width: 420,
     },
     headerData: {
         paddingLeft: 10,

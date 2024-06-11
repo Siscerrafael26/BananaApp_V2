@@ -9,15 +9,7 @@ export default OrdersCard = ({ cardText = "Oda Namba.", props, index }) => {
                 {props?.id + 1}
                 {"nG"}
             </Text>
-            <BuyerOrderCard
-                image={
-                    props.product_id.kiasi === "Kichane"
-                        ? require("@assets/Banana1.jpg")
-                        : require("@assets/banana9.jpg")
-                }
-                props={props}
-                index={index}
-            />
+            <BuyerOrderCard props={props} index={index} />
         </View>
     );
 };

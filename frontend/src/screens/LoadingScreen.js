@@ -6,7 +6,6 @@ const Loading = () => {
         <SafeAreaView
             style={{
                 flex: 1,
-                backgroundColor: "#70c945",
                 justifyContent: "center",
                 alignItems: "center",
             }}
@@ -18,7 +17,15 @@ const Loading = () => {
                     alignItems: "center",
                 }}
             >
-                <Text> Loading ...</Text>
+                <Text
+                    style={{
+                        fontSize: 30,
+                        textAlign: "center",
+                        color: "#70c945",
+                    }}
+                >
+                    Loading ...
+                </Text>
             </View>
         </SafeAreaView>
     );

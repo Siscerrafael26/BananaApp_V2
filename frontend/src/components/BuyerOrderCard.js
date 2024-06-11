@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Image, Text, StyleSheet } from "react-native";
+import AuthContext from "../context/AuthContext";
 
-const BuyerOrderCard = ({ image, props }) => {
+const BuyerOrderCard = ({ props }) => {
+    const { baseURL } = useContext(AuthContext);
     return (
         <View
             style={{
@@ -10,7 +12,10 @@ const BuyerOrderCard = ({ image, props }) => {
                 marginTop: 20,
             }}
         >
-            <Image source={image} style={{ height: 110, width: 160 }} />
+            <Image
+                source={{ uri: baseURL + props?.product_id?.image }}
+                style={{ height: 110, width: 160 }}
+            />
 
             <View style={{ marginLeft: 10 }}>
                 <Text>Aina: {props?.product_id?.aina}</Text>

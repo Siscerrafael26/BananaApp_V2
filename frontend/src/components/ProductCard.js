@@ -20,7 +20,10 @@ const ProductCard = ({
                 paddingLeft: 10,
             }}
         >
-            <Image source={image} style={{ height: 110, width: 160 }} />
+            <Image
+                source={{ uri: image + product?.image }}
+                style={{ height: 110, width: 160 }}
+            />
             <View style={{ marginLeft: 10 }}>
                 <Text>Aina: {product?.aina}</Text>
                 <Text>Kiasi: {product?.kiasi}</Text>

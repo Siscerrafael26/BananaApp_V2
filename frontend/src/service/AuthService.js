@@ -16,8 +16,6 @@ export async function loadUser() {
     return user;
 }
 
-// making a login request and getting the user data in a data object
-
 // Getting the authenticated user data by calling /user api endpoint
 export async function signup(credential) {
     // console.log(credential);

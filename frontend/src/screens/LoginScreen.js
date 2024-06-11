@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -7,33 +7,43 @@ import {
     TouchableOpacity,
     Platform,
 } from "react-native";
+import LoadingScreen from "@screens/LoadingScreen";
 import { BlurView } from "expo-blur";
 import { CustomUserInput } from "@components/CustomUserInput";
 import appColors from "@colors/appColors";
 import ScreenNames from "@screens/ScreenNames";
 import { login, loadUser } from "../service/AuthService";
+import AuthContext from "../context/AuthContext";
 const LoginScreen = ({ navigation }) => {
     // setting the email and password from inputs
     const [email, setEmail] = useState("");
     const [password, setPaswword] = useState("");
     // setting the errors associated with the input and authentication
     const [errors, setErrors] = useState({});
-
+    const { setUser } = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(false);
     async function handleLogin() {
         setErrors({});
         try {
+            setIsLoading(true);
             await login({
                 email,
                 password,
                 device_name: `${Platform.OS} ${Platform.Version}`,
             });
-            const user = await loadUser();
-            user && navigation.navigation(ScreenNames.AUTH_SCREEN);
+            const myUser = await loadUser();
+            setUser(myUser);
+            myUser ? navigation.navigation(ScreenNames.AUTH_SCREEN) : "";
         } catch (error) {
             if (error.response?.status === 422) {
                 setErrors(error.response.data.errors);
             }
+        } finally {
+            setIsLoading(false);
         }
+    }
+    if (isLoading) {
+        return <LoadingScreen />;
     }
     return (
         <ImageBackground
@@ -78,16 +88,8 @@ const LoginScreen = ({ navigation }) => {
                 <TouchableOpacity
                     style={style.loginButton}
                     onPress={handleLogin}
-                    // onPress={() => {
-                    // navigation.navigate(ScreenNames.AUTH_SCREEN);
-                    // handleLogin;
-                    // }}
                 >
                     <Text style={{ color: "white" }}>LOGIN</Text>
-                    {/* <Button
-                        title="Login"
-                       
-                    /> */}
                 </TouchableOpacity>
 
                 <View style={{ height: 40 }}></View>

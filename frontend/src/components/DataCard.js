@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import CardAvatar from "./CardAvatar";
 import AuthContext from "../context/AuthContext";
 export default DataCard = ({ cardType, props }) => {
-    const { farmerOrderData } = useContext(AuthContext);
+    const { farmerOrderData, baseURL } = useContext(AuthContext);
     const farmerOrder = farmerOrderData?.data?.length;
     return (
         <TouchableOpacity activeOpacity={0.7} style={styles.dataCard}>
@@ -42,7 +42,7 @@ export default DataCard = ({ cardType, props }) => {
 const styles = StyleSheet.create({
     dataCard: {
         height: 100,
-        width: 380,
+        width: 400,
         backgroundColor: "white",
         borderRadius: 5,
         elevation: 5,

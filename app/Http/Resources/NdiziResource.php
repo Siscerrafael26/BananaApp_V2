@@ -19,6 +19,7 @@ class NdiziResource extends JsonResource
             'id'=>$this->id,
             'bei'=>$this->bei,
             'kiasi'=>$this->kiasi,
+            'image'=>$this->image,
             'user_id' => new UserResource($this->product),
         ];
     }

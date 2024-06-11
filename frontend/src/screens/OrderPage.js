@@ -8,9 +8,20 @@ const OrderPage = () => {
     const orders = buyerOrdersData?.data;
     return (
         <SafeAreaView
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+            style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 30,
+            }}
         >
-            <ScrollView style={{ flex: 1, backgroundColor: "#F3FFF3" }}>
+            <ScrollView
+                style={{
+                    flex: 1,
+                    backgroundColor: "#F3FFF3",
+                    marginBottom: 30,
+                }}
+            >
                 {orders.map((item, index) => (
                     <OrdersCard key={index} props={item} index={index} />
                 ))}

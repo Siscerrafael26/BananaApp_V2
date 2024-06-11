@@ -4,22 +4,19 @@ import FarmerOrder from "../components/FarmerOrder";
 import AgreeBtn from "./AgreeBtn";
 import DenieBtn from "./DenieBtn";
 
-export default FarmersOrderCard = ({ cardText = "Oda ya", props, index }) => {
+export default FarmersOrderCard = ({
+    cardText = "Oda ya",
+    props,
+    index,
+    baseURL,
+}) => {
     return (
         <View style={styles.card}>
             <Text style={styles.cardText}>
                 {cardText} {props?.buyer_id?.name}
             </Text>
             {/* <Text>{JSON.stringify(props?.id, "", 2)}</Text> */}
-            <FarmerOrder
-                image={
-                    props.product_id.kiasi === "Kichane"
-                        ? require("@assets/Banana1.jpg")
-                        : require("@assets/banana9.jpg")
-                }
-                props={props}
-                index={index}
-            />
+            <FarmerOrder image={baseURL} props={props} index={index} />
             <View style={styles.buttonWrapper}>
                 <AgreeBtn title={"Kubali Oda"} product_id={props?.id} />
                 <DenieBtn title={"Kataa Oda"} product_id={props?.id} />

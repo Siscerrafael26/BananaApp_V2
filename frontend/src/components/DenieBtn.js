@@ -1,17 +1,35 @@
-import { TouchableOpacity, StyleSheet, Text } from "react-native";
+import { TouchableOpacity, StyleSheet, Text, Alert } from "react-native";
 import { updateOrder } from "../service/OrderService";
-
+import { useState } from "react";
+import LoadingScreen from "@screens/LoadingScreen";
 export default DenieBtn = ({ title, product_id }) => {
+    const [loading, setLoading] = useState(false);
     async function handleDenie() {
         try {
+            setLoading(true);
             const data = {
                 status: "Imekataliwa",
             };
             const response = await updateOrder(data, product_id);
+            setLoading(true);
         } catch (error) {
-            // console.log(error);
+            Alert.alert("Error", error.response.data.message);
+        } finally {
+            setLoading(false);
         }
     }
+    if (loading)
+        return (
+            <Text
+                style={{
+                    fontSize: 30,
+                    textAlign: "center",
+                    color: "#70c945",
+                }}
+            >
+                Loading ...
+            </Text>
+        );
     return (
         <TouchableOpacity activeOpacity={0.8} style={styles.button}>
             <Text style={styles.buttonText} onPress={handleDenie}>
